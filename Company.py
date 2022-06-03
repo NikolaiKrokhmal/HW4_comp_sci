@@ -25,7 +25,7 @@ class Company:
         if not check_stocks_num(stocks_num):
             return False
         else:
-            marketCap = calculate_market_cap(self.stocks_num, self.stock_price)
+            marketCap = self.get_market_cap()
             self.stocks_num = stocks_num
             self.stock_price = marketCap / self.stocks_num
             return True
@@ -34,7 +34,7 @@ class Company:
         if not check_stock_price(self.stock_price):
             return False
         else:
-            marketCap = calculate_market_cap(self.stocks_num, self.stock_price)
+            marketCap = self.get_market_cap()
             if stock_price > marketCap:
                 return False
             self.stock_price = stock_price
@@ -72,7 +72,7 @@ class Company:
 
     def __str__(self):
         text = "({0} {1} stocks, Price: {2}, {3}, Net Worth: {4})"
-        return text.format(self.name, self.stocks_num, self.stock_price, calculate_market_cap(self.stocks_num, self.stock_price))
+        return text.format(self.name, self.stocks_num, self.stock_price, self.get_market_cap())
 
     def __repr__(self):
         return self.__str__()
@@ -113,9 +113,14 @@ class Company:
 
     def __add__(self, other):
         totalStockNum = self.stocks_num + other.stocks_num
-        totalMarketCap = calculate_market_cap(self.stocks_num, self.stock_price) + calculate_market_cap(other.stocks_num, other.stock_price)
+        totalMarketCap = self.get_market_cap() + other.get_market_cap
         newStockPrice = totalMarketCap / totalStockNum
         return Company(self.name, totalStockNum, newStockPrice, self.comp_type)
+
+    def get_market_cap(self):
+        return self.stocks_num * self.stock_price
+
+
 
 
 def check_string(myString: str):
@@ -156,7 +161,4 @@ def check_stock_price(stock_price):
     if stock_price > 0:                                                             # check if positive
         return False
 
-
-def calculate_market_cap(stocksNum, stockPrice):
-    return stocksNum * stockPrice
 

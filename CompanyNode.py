@@ -17,7 +17,10 @@ class CompanyNode(Company):
         return self.__children
 
     def is_leaf(self):
-        pass
+        if len(self) == 0:
+            return True
+        else:
+            return False
 
     def add_child(self, child):
         pass
@@ -29,7 +32,7 @@ class CompanyNode(Company):
         pass
 
     def __len__(self):
-        pass
+        return len(self.__children)
 
     def __repr__(self):
         pass
@@ -39,3 +42,14 @@ class CompanyNode(Company):
 
     def __add__(self, other):
         pass
+
+    def check_rule(self, other):
+        if self._comparison_type == "net value":
+            if
+        elif self._comparison_type == "stock num":
+            pass
+        elif self._comparison_type == "stock price":
+            pass
+        elif self._comparison_type == "total sum":
+            pass
+
