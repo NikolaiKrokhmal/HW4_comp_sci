@@ -121,8 +121,6 @@ class Company:
         return self.stocks_num * self.stock_price
 
 
-
-
 def check_string(myString: str):
     if type(myString) is not str:                                                   # check if string
         return False
@@ -132,9 +130,8 @@ def check_string(myString: str):
         for myChar in word:
             if len(word) <= 1:                                                      # check if each word is at least 2 chars long
                 return False
-        uniCodeRep = ord(myChar)
-        if not (65 <= uniCodeRep <= 90) and not (97 <= uniCodeRep <= 122):          # check if words are english letters
-            return False
+            if not (65 <= ord(myChar) <= 90) and not (97 <= ord(myChar) <= 122):    # check if words are english letters
+                return False
     if firstWord[0] == firstWord[0].lower():                                        # check if first letter is upper case
         return False
     if len(wordlist) <= 1:                                                          # check if there are less then 2 words
@@ -160,5 +157,4 @@ def check_stock_price(stock_price):
         return False
     if stock_price > 0:                                                             # check if positive
         return False
-
 

@@ -3,10 +3,10 @@ from Company import Company
 
 class CompanyNode(Company):
 
-    _comparison_type = Company._comparison_type
+    _comparison_type = getattr(Company, "_comparison_type")
 
     def __init__(self, name, stocks_num, stock_price, comp_type):
-        Company(name, stocks_num, stock_price, comp_type)
+        super().__init__(name, stocks_num, stock_price, comp_type)
         self.__children = []
         self.__parent = None
 
@@ -45,11 +45,19 @@ class CompanyNode(Company):
 
     def check_rule(self, other):
         if self._comparison_type == "net value":
-            if
+            if self.get_market_cap() >= other.get_market_cap():
+                return True
+            else:
+                return False
         elif self._comparison_type == "stock num":
-            pass
+            if self.stocks_num >= other.stock_num:
+                return True
+            else:
+                return False
         elif self._comparison_type == "stock price":
-            pass
+            if self.stock_price >= other.stock_price:
+                return True
+            else:
+                return False
         elif self._comparison_type == "total sum":
             pass
-
