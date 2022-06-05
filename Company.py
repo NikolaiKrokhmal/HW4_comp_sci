@@ -71,20 +71,27 @@ class Company:
             return True
 
     def __str__(self):
-        return self.__repr__()
+        return self.representation()
 
     def __repr__(self):
+        return self.representation()
+
+    def representation(self):
         text = "({0}, {1} stocks, Price: {2}, {3}, Net Worth: {4})"
         return text.format(self.name, self.stocks_num, self.stock_price, self.comp_type, self.get_market_cap())
 
     def __lt__(self, other: "Company"):
         if type(other) is not Company:
             return False
-        if Company._comparison_type == "net value":
+        else:
+            return self.lt_compare(other)
+
+    def lt_compare(self, other):
+        if self.__class__._comparison_type == "net value":
             return (self.stocks_num * self.stock_price) < other.stocks_num * other.stock_price
-        elif Company._comparison_type == "stock num":
+        elif self.__class__._comparison_type == "stock num":
             return self.stocks_num < other.stocks_num
-        elif Company._comparison_type == "stock price":
+        elif self.__class__._comparison_type == "stock price":
             return self.stock_price < other.stock_price
 
     def __gt__(self, other: "Company"):
@@ -95,11 +102,14 @@ class Company:
     def __eq__(self, other: "Company"):
         if type(other) is not Company:
             return False
-        if Company._comparison_type == "net value":
+        return self.eq_compare(other)
+
+    def eq_compare(self, other):
+        if self.__class__._comparison_type == "net value":
             return (self.stocks_num * self.stock_price) == other.stocks_num * other.stock_price
-        elif Company._comparison_type == "stock num":
+        elif self.__class__._comparison_type == "stock num":
             return self.stocks_num == other.stocks_num
-        elif Company._comparison_type == "stock price":
+        elif self.__class__._comparison_type == "stock price":
             return self.stock_price == other.stock_price
 
     def __ge__(self, other: "Company"):

@@ -1,4 +1,5 @@
 from Company import Company
+import copy
 
 
 class CompanyNode(Company):
@@ -25,7 +26,7 @@ class CompanyNode(Company):
     def add_child(self, child: "CompanyNode"):
         if self.check_rule(child):
             self.__children.append(child)
-            child.__parent = self.name
+            child._CompanyNode__parent = self
             return True
         else:
             return False
@@ -46,18 +47,41 @@ class CompanyNode(Company):
         return len(self.__children)
 
     def __repr__(self):
-        pass
+        text = "[{0}, [{1}]]"
+        totalText = ""
+        if len(self.__children) == 0:
+            return text.format(self.representation(), "")
+        for child in self.__children:
+            totalText += child.__repr__()
+        return text.format(self.representation(), totalText)
 
     def is_ancestor(self, other: "CompanyNode"):
         while other.get_parent() is not None:
-            if self.name == other.get_parent():
+            if self == other.get_parent():
                 return True
             else:
                 other = other.get_parent()
+        if self is other:
+            return True
         return False
 
     def __add__(self, other: "CompanyNode"):
-        pass
+        if other.is_ancestor(self):
+            raise ValueError("Error: Cant merge ancestor into self")
+        mergedCompany = CompanyNode(self.name, self.stocks_num, self.stock_price, self.comp_type)
+        mergedCompanyMarketCap = self.get_market_cap() + other.get_market_cap()
+        mergedCompany.add_stocks(other.stocks_num)
+        mergedCompany.stock_price = mergedCompanyMarketCap / mergedCompany.stocks_num
+        other.detach_node()
+        for child in self.__children:
+            mergedCompany.add_child(copy.deepcopy(child))
+        othersChildren = other.get_children()
+        for child in othersChildren:
+            mergedCompany.add_child(copy.deepcopy(child))
+        mergedCompany._CompanyNode__parent = copy.deepcopy(self.__parent)
+        if not mergedCompany.test_node_order_validity:
+            raise ValueError("Error: cant merge nodes - new node doesnt obey rule")
+        return mergedCompany
 
     @classmethod
     def change_comparison_type(cls, comparison_type):
@@ -97,3 +121,93 @@ class CompanyNode(Company):
         for child in self.__children:
             child_value += child.get_total_sum()
         return totalValue + child_value
+
+    def detach_node(self):
+        parent = self.__parent
+        parentsChildren = parent.get_children()
+        selfIndex = parentsChildren.index(self)
+        parent._CompanyNode__children = parentsChildren[:selfIndex] + parentsChildren[selfIndex+1:]
+
+    def __lt__(self, other: "CompanyNode"):
+        if type(other) is not CompanyNode:
+            return False
+        if self._comparison_type != "total sum":
+            return super().lt_compare(other)
+        else:
+            return self.get_total_sum() < other.get_total_sum()
+
+    def __eq__(self, other: "CompanyNode"):
+        if type(other) is not CompanyNode:
+            return False
+        if self._comparison_type != "total sum":
+            return super().eq_compare(other)
+        else:
+            return self.get_total_sum() == other.get_total_sum()
+
+    def __gt__(self, other: "CompanyNode"):
+        if type(other) is not CompanyNode:
+            return False
+        if self._comparison_type != "total sum":
+            return super().__gt__(other)
+        else:
+            return other.get_total_sum() < self.get_total_sum()
+
+    def __ne__(self, other: "CompanyNode"):
+        if type(other) is not CompanyNode:
+            return False
+        if self._comparison_type != "total sum":
+            return super().__ne__(other)
+        else:
+            return not self.get_total_sum() == other.get_total_sum()
+
+    def __ge__(self, other: "CompanyNode"):
+        if type(other) is not CompanyNode:
+            return False
+        if self._comparison_type != "total sum":
+            return super().__ge__(other)
+        else:
+            return not self.get_total_sum() < other.get_total_sum()
+
+    def __le__(self, other: "CompanyNode"):
+        if type(other) is not CompanyNode:
+            return False
+        if self._comparison_type != "total sum":
+            return super().__le__(other)
+        else:
+            return not other.get_total_sum() < self.get_total_sum()
+
+    def set_stock_price(self, stock_price):
+        previousPrice = self.stock_price
+        super(CompanyNode, self).set_stock_price(stock_price)
+        if self.test_node_order_validity():
+            return True
+        else:
+            super(CompanyNode, self).set_stock_price(previousPrice)
+            return False
+
+    def set_stocks_num(self, stocks_num):
+        previousNum = self.stocks_num
+        super(CompanyNode, self).set_stocks_num(stocks_num)
+        if self.test_node_order_validity():
+            return True
+        else:
+            super(CompanyNode, self).set_stocks_num(previousNum)
+            return False
+
+    def update_net_worth(self, net_worth):
+        previoysNetWorth = self.net_worth()
+        super(CompanyNode, self).update_net_worth(net_worth)
+        if self.test_node_order_validity():
+            return True
+        else:
+            super(CompanyNode, self).update_net_worth(previoysNetWorth)
+            return False
+
+    def add_stocks(self, number):
+        previousStocks = self.stocks_num
+        super(CompanyNode, self).add_stocks(number)
+        if self.test_node_order_validity():
+            return
+        else:
+            super(CompanyNode, self).add_stocks(-number)
+            return False
