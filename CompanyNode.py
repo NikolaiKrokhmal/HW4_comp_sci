@@ -59,6 +59,14 @@ class CompanyNode(Company):
     def __add__(self, other: "CompanyNode"):
         pass
 
+    @classmethod
+    def change_comparison_type(cls, comparison_type):
+        if comparison_type is not ("net value" or "stock num" or "stock price" or "total sum"):
+            return False
+        else:
+            CompanyNode._comparison_type = comparison_type
+            return True
+
     def check_rule(self, other: "CompanyNode"):
         if self._comparison_type == "net value":
             if self.get_market_cap() >= other.get_market_cap():

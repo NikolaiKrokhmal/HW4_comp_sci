@@ -3,7 +3,7 @@ class Company:
     _comparison_type = "net value"
 
     def __init__(self, name, stocks_num, stock_price, comp_type):
-        if not check_string(name) or not check_stocks_num(stocks_num) or not check_stock_price(stock_price) or not check_string(comp_type):
+        if (not check_string(name)) or (not check_stocks_num(stocks_num)) or (not check_stock_price(stock_price)) or (not check_string(comp_type)):
             raise ValueError("One or more of the argument provided does not meet requirements")
         else:
             self.name = name
@@ -38,7 +38,7 @@ class Company:
             if stock_price > marketCap:
                 return False
             self.stock_price = stock_price
-            self.stocks_num = marketCap // self.stock_price
+            self.stocks_num = int(marketCap // self.stock_price)
             return True
 
     def set_comp_type(self, comp_type):
@@ -71,13 +71,13 @@ class Company:
             return True
 
     def __str__(self):
-        text = "({0} {1} stocks, Price: {2}, {3}, Net Worth: {4})"
-        return text.format(self.name, self.stocks_num, self.stock_price, self.get_market_cap())
+        return self.__repr__()
 
     def __repr__(self):
-        return self.__str__()
+        text = "({0}, {1} stocks, Price: {2}, {3}, Net Worth: {4})"
+        return text.format(self.name, self.stocks_num, self.stock_price, self.comp_type, self.get_market_cap())
 
-    def __lt__(self, other):
+    def __lt__(self, other: "Company"):
         if type(other) is not Company:
             return False
         if Company._comparison_type == "net value":
@@ -87,12 +87,12 @@ class Company:
         elif Company._comparison_type == "stock price":
             return self.stock_price < other.stock_price
 
-    def __gt__(self, other):
+    def __gt__(self, other: "Company"):
         if type(other) is not Company:
             return False
         return other < self
 
-    def __eq__(self, other):
+    def __eq__(self, other: "Company"):
         if type(other) is not Company:
             return False
         if Company._comparison_type == "net value":
@@ -102,18 +102,18 @@ class Company:
         elif Company._comparison_type == "stock price":
             return self.stock_price == other.stock_price
 
-    def __ge__(self, other):
+    def __ge__(self, other: "Company"):
         return self > other or self == other
 
-    def __le__(self, other):
+    def __le__(self, other: "Company"):
         return self < other or self == other
 
-    def __ne__(self, other):
+    def __ne__(self, other: "Company"):
         return not self == other
 
-    def __add__(self, other):
+    def __add__(self, other: "Company"):
         totalStockNum = self.stocks_num + other.stocks_num
-        totalMarketCap = self.get_market_cap() + other.get_market_cap
+        totalMarketCap = self.get_market_cap() + other.get_market_cap()
         newStockPrice = totalMarketCap / totalStockNum
         return Company(self.name, totalStockNum, newStockPrice, self.comp_type)
 
@@ -127,14 +127,12 @@ def check_string(myString: str):
     wordlist = myString.split()
     firstWord = wordlist[0]
     for word in wordlist:
+        if len(word) <= 1:                                                            # check if each word is at least 2 chars long
+            return False
         for myChar in word:
-            if len(word) <= 1:                                                      # check if each word is at least 2 chars long
-                return False
-            if not (65 <= ord(myChar) <= 90) and not (97 <= ord(myChar) <= 122):    # check if words are english letters
+            if not (65 <= ord(myChar) <= 90) and not (97 <= ord(myChar) <= 122):      # check if words are english letters
                 return False
     if firstWord[0] == firstWord[0].lower():                                        # check if first letter is upper case
-        return False
-    if len(wordlist) <= 1:                                                          # check if there are less then 2 words
         return False
     amountOf_ = 0                                                                   # check if there is only 1 space between words
     for myChar in myString:
@@ -148,13 +146,16 @@ def check_string(myString: str):
 def check_stocks_num(stocks_num: int):
     if type(stocks_num) is not int:                                                 # check if int
         return False
-    if stocks_num > 0:                                                              # check if positive
+    if not stocks_num > 0:                                                              # check if positive
         return False
+    else:
+        return True
 
 
 def check_stock_price(stock_price):
-    if type(stock_price) is not int and stock_price is not float:                   # check if int or float
+    if (type(stock_price) is not int) and (type(stock_price) is not float):                   # check if int or float
         return False
-    if stock_price > 0:                                                             # check if positive
+    if not stock_price > 0:                                                             # check if positive
         return False
-
+    else:
+        return True
