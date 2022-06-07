@@ -46,14 +46,16 @@ class CompanyNode(Company):
     def __len__(self):
         return len(self.__children)
 
-    def __repr__(self):
+    """def __repr__(self):
         text = "[{0}, [{1}]]"
         totalText = ""
         if len(self.__children) == 0:
             return text.format(self.representation(), "")
         for child in self.__children:
             totalText += child.__repr__()
-        return text.format(self.representation(), totalText)
+        return text.format(self.representation(), totalText)"""
+    def __repr__(self):
+        return str(self.name)
 
     def is_ancestor(self, other: "CompanyNode"):
         while other.get_parent() is not None:
@@ -195,19 +197,20 @@ class CompanyNode(Company):
             return False
 
     def update_net_worth(self, net_worth):
-        previoysNetWorth = self.net_worth()
+        previousNetWorth = self.net_worth()
         super(CompanyNode, self).update_net_worth(net_worth)
         if self.test_node_order_validity():
             return True
         else:
-            super(CompanyNode, self).update_net_worth(previoysNetWorth)
+            super(CompanyNode, self).update_net_worth(previousNetWorth)
             return False
 
     def add_stocks(self, number):
-        previousStocks = self.stocks_num
         super(CompanyNode, self).add_stocks(number)
         if self.test_node_order_validity():
             return
         else:
             super(CompanyNode, self).add_stocks(-number)
             return False
+
+
